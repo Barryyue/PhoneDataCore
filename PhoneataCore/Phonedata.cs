@@ -7,9 +7,9 @@ namespace PhoneataCore
 {
     public class PhoneData
     {
-        private static string Version = "";  //版本号
-        private static byte[] Buf; //存储所有的数据于byte[]中
-        private static Dictionary<int, string> dicBuf;
+        private static string _version = "";  //版本号
+        private static byte[] _buf; //存储所有的数据于byte[]中
+        private static Dictionary<int, string> _dicBuf;
         enum CardType
         {
             UNKNOWN = 0,    // 未知，查找失败
@@ -56,12 +56,8 @@ namespace PhoneataCore
             /// 把 PhoneRecord{} 结构体中的数据，转换成string
             /// </summary>
             /// <returns></returns>
-            override public string ToString()
-            {
-                string tmp = string.Format("PhoneNum: {0}\nAreaZon: {1}\nCardType: {2}\nCity: {3}\nZipCode: {4}\nProvince: {5}\n", this.PhoneNum, this.AreaZon, this.CardType, this.City, this.ZipCode, this.Province);
-                return tmp;
-            }
-
+            override public string ToString() =>
+                $"PhoneNum: {this.PhoneNum}\nAreaZon: {this.AreaZon}\nCardType: {this.CardType}\nCity: {this.City}\nZipCode: {this.ZipCode}\nProvince: {this.Province}\n";
         };
 
         /// <summary>
@@ -94,8 +90,6 @@ namespace PhoneataCore
         {
             System.IO.MemoryStream bufferStream = new System.IO.MemoryStream();
 
-            // Console.WriteLine("srcbyte length = {0}\n", srcBytes.Length);
-
             byte[] returnByte = new byte[] { };
             if (srcBytes == null) { return returnByte; }
             if (startIndex < 0) { startIndex = 0; }
@@ -120,12 +114,12 @@ namespace PhoneataCore
         /// <returns></returns>
         private Int32 Get4(byte[] b)
         {
-            Int32 tmp;
+            int tmp;
             if (b.Length < 4)
             {
                 return 0;
             }
-            tmp = (Int32)(b[0]) | ((Int32)(b[1])) << 8 | ((Int32)(b[2])) << 16 | ((Int32)(b[3])) << 24;
+            tmp = b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24;
             return tmp;
         }
 
@@ -172,7 +166,7 @@ namespace PhoneataCore
         /// <param name="phonedata"></param>
         public void Init(string phonedata)
         {
-            dicBuf = new Dictionary<int, string>();
+            _dicBuf = new Dictionary<int, string>();
             byte[] tmp = new byte[4];
 
             if (!File.Exists(phonedata))
@@ -188,28 +182,28 @@ namespace PhoneataCore
             string propertyCare;//合并卡类型后的电话号码属性
             using (FileStream fs = new FileStream("phone.dat", FileMode.OpenOrCreate, FileAccess.Read))
             {
-                Buf = new byte[fs.Length];
-                fs.Read(Buf, 0, (int)fs.Length);
-                boundary = Buf[4] | Buf[5] << 8 | Buf[6] << 16 | Buf[7] << 24;
-                for (int i = boundary; i < Buf.Length; i += 9)
+                _buf = new byte[fs.Length];
+                fs.Read(_buf, 0, (int)fs.Length);
+                boundary = _buf[4] | _buf[5] << 8 | _buf[6] << 16 | _buf[7] << 24;
+                for (int i = boundary; i < _buf.Length; i += 9)
                 {
-                    phone7 = Buf[i] | Buf[i + 1] << 8 | Buf[i + 2] << 16 | Buf[i + 3] << 24;
-                    phoneDataIndex = Buf[i + 4] | Buf[i + 5] << 8 | Buf[i + 6] << 16 | Buf[i + 7] << 24;
-                    cardType = Buf[i + 8];
+                    phone7 = _buf[i] | _buf[i + 1] << 8 | _buf[i + 2] << 16 | _buf[i + 3] << 24;
+                    phoneDataIndex = _buf[i + 4] | _buf[i + 5] << 8 | _buf[i + 6] << 16 | _buf[i + 7] << 24;
+                    cardType = _buf[i + 8];
                     for (int n = phoneDataIndex; n < boundary; n++)
                     {
-                        if (Buf[n] == zeroByte[0])
+                        if (_buf[n] == zeroByte[0])
                         {
-                            propertyCare = Encoding.UTF8.GetString(Buf, phoneDataIndex, n - phoneDataIndex) + "|" + cardType;
-                            dicBuf.Add(phone7, propertyCare);
+                            propertyCare = Encoding.UTF8.GetString(_buf, phoneDataIndex, n - phoneDataIndex) + "|" + cardType;
+                            _dicBuf.Add(phone7, propertyCare);
                             break;
                         }
                     }
                 }
             }
 
-            tmp = SubByte(Buf, 0, 4);
-            Version = Encoding.Default.GetString(tmp);
+            tmp = SubByte(_buf, 0, 4);
+            _version = Encoding.Default.GetString(tmp);
         }
 
         /// <summary>
@@ -218,7 +212,7 @@ namespace PhoneataCore
         /// <returns> 返回版本号</returns>
         public string GetVersion()
         {
-            return Version;
+            return _version;
         }
 
         /// <summary>
@@ -292,12 +286,12 @@ namespace PhoneataCore
             PhoneRecord pr = new PhoneRecord();
             string s;
             string[] strTemp;
-            if (!dicBuf.ContainsKey((int)pi.Phone7))
+            if (!_dicBuf.ContainsKey((int)pi.Phone7))
             {
                 pr.Set(pi.PhoneNum, "null", "null", "null", "null", "null");
                 return pr;
             }
-            s = dicBuf[(int)pi.Phone7];
+            s = _dicBuf[(int)pi.Phone7];
             strTemp = s.Split(new char[] { '|' });
             pr.Set(pi.PhoneNum, strTemp[0], strTemp[1], strTemp[2], strTemp[3], GetCardType(Convert.ToByte(strTemp[4])));
             return pr;
