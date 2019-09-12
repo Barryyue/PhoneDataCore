@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhoneataCore", "PhoneataCore\PhoneataCore.csproj", "{BEB13340-BB62-400A-A1EF-E563A6AC3280}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhonedataCore", "PhonedataCore\PhonedataCore.csproj", "{BEB13340-BB62-400A-A1EF-E563A6AC3280}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhonedataBenchmarkCore", "PhonedataBenchmarkCore\PhonedataBenchmarkCore.csproj", "{91CF184E-95F8-41A0-8360-4A8E86ABEFDD}"
 EndProject

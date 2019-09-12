@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PhoneataCore\PhoneataCore.csproj" />
+    <ProjectReference Include="..\PhonedataCore\PhonedataCore.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿using PhoneataCore;
+﻿using PhonedataCore;
 using System;
 
 namespace PhonedataCmd
